@@ -35,3 +35,6 @@ endif()
 if (${NNET_ENABLE_BENCHMARKS})
   add_subdirectory(benchmarks)
 endif()
+
+include_directories(eigen)
+include_directories(EigenRand)
