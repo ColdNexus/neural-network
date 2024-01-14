@@ -1,5 +1,5 @@
 #pragma once
 
-namespace neural_network {
+namespace nnet {
 auto AlwaysZero() -> int;
 }

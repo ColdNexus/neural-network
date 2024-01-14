@@ -1,1 +1,1 @@
-#add_nn_benchmark(benchmark)
+#add_nnet_benchmark(benchmark)

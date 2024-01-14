@@ -1,11 +1,11 @@
-#include "../src/program.h"
+#include "program.h"
 
 #include <cassert>
 #include <iostream>
 
 int main() {
-    assert(neural_network::AlwaysZero() == 1);
+    assert(nnet::AlwaysZero() == 0);
     
-    std::cout << "TESTS PASSED\n" << neural_network::AlwaysZero() << '\n';
+    std::cout << "TESTS PASSED\n" << nnet::AlwaysZero() << '\n';
     return 0;
 }

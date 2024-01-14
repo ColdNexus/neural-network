@@ -1,1 +1,1 @@
-add_nn_test(test_test)
+add_nnet_test(test_test)
