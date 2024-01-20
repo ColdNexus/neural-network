@@ -3,6 +3,7 @@ build
 asan_build
 build_asan
 .cache
+.vscode
 
 # github generated:
 

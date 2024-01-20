@@ -16,7 +16,10 @@ include(cmake/ProjectSettings.cmake)
 
 # Create library target.
 add_library(nnet
-  src/program.cpp
+  src/net.cpp
+  src/layer.cpp
+  src/loss-func.cpp
+  src/activation-func.cpp
 )
 set_compile_options(nnet)
 
@@ -25,6 +28,9 @@ add_library(nnet::nnet ALIAS nnet)
 
 # Set search paths.
 target_include_directories(nnet PUBLIC src)
+target_include_directories(nnet PUBLIC eigen)
+target_include_directories(nnet PUBLIC EigenRand)
+#target_include_directories(nnet PUBLIC googletest/googletest/include)
 
 # Build tests if needed.
 if (${NNET_ENABLE_TESTS})
@@ -38,3 +44,4 @@ endif()
 
 include_directories(eigen)
 include_directories(EigenRand)
+#include_directories(googletest)

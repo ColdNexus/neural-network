@@ -4,3 +4,6 @@
 [submodule "EigenRand"]
 	path = EigenRand
 	url = https://github.com/bab2min/EigenRand
+[submodule "googletest"]
+	path = googletest
+	url = git@github.com:google/googletest.git
