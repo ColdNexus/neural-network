@@ -16,7 +16,41 @@ int main() {
     std::cout << nnet::ReLu.Apply(v1) << '\n';
     std::cout << nnet::ReLu.ApplyDerivative(v2) << '\n';
 
-    nnet::Net net({3, 10, 2}, {nnet::ReLu}, nnet::MSE);
-    std::cout << net.Predict(v2) << '\n';
+    std::cout << "_____________\n";
+
+    std::vector<nnet::Net::Vector> data;
+    std::vector<nnet::Net::Vector> ans;
+    for (int i = 0; i < 100; ++i) {
+        nnet::Net::Vector datatmp(2);
+        datatmp[0] = static_cast<int>(rand()) % 10;
+        datatmp[1] = static_cast<int>(rand()) % 10;
+
+        // std::cout << datatmp << "\n";
+        data.push_back(datatmp);
+
+        nnet::Net::Vector anstmp(1);
+        anstmp[0] = datatmp[0] + datatmp[1];
+        // std::cout << anstmp << "\n\n";
+        ans.push_back(anstmp);
+    }
+
+    nnet::Net net({2, 1}, {nnet::Id}, nnet::MSE);
+    net.Train(data, ans, 10);
+
+    nnet::Net::Vector test1{{2, 2}};
+    nnet::Net::Vector test2{{3, 3}};
+    nnet::Net::Vector test3{{4, 2}};
+    nnet::Net::Vector test4{{1, 5}};
+    nnet::Net::Vector test5{{9, 1}};
+    nnet::Net::Vector test6{{3, 2}};
+    nnet::Net::Vector test7{{0, 3}};
+
+    std::cout << net.Predict(test1) << '\n';
+    std::cout << net.Predict(test2) << '\n';
+    std::cout << net.Predict(test3) << '\n';
+    std::cout << net.Predict(test4) << '\n';
+    std::cout << net.Predict(test5) << '\n';
+    std::cout << net.Predict(test6) << '\n';
+    std::cout << net.Predict(test7) << '\n';
     return 0;
 }

@@ -19,7 +19,6 @@ LossFunction::VectorT LossFunction::Gradient(const Vector& actual, const Vector&
 }
 
 namespace {
-
 LossFunction::Scalar MSEDist(const LossFunction::Vector& actual,
                              const LossFunction::Vector& ideal) {
     return (actual - ideal).squaredNorm();
@@ -27,9 +26,8 @@ LossFunction::Scalar MSEDist(const LossFunction::Vector& actual,
 
 LossFunction::VectorT MSEGradient(const LossFunction::Vector& actual,
                                   const LossFunction::Vector& ideal) {
-    throw "not implemented";
+    return 2 * (actual - ideal).transpose();
 }
-
 }  // namespace
 
 LossFunction MSE{MSEDist, MSEGradient};

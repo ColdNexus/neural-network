@@ -30,4 +30,5 @@ private:
 };
 
 extern ActivationFunction ReLu;  // NOLINT
+extern ActivationFunction Id;    // NOLINT
 }  // namespace nnet

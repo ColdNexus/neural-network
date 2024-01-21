@@ -47,7 +47,30 @@ ActivationFunction::Vector ReLuVectorApplyDerivative(const ActivationFunction::V
     }
     return ret;
 }
+
+ActivationFunction::Scalar IdApply(ActivationFunction::Scalar x) {
+    return x;
+}
+ActivationFunction::Scalar IdApplyDerivative(ActivationFunction::Scalar x) {
+    return 1;
+}
+ActivationFunction::Vector IdVectorApply(const ActivationFunction::Vector& v) {
+    ActivationFunction::Vector ret(v.size());
+    for (size_t i = 0; i < v.size(); ++i) {
+        ret[i] = IdApply(v[i]);
+    }
+    return ret;
+}
+ActivationFunction::Vector IdVectorApplyDerivative(const ActivationFunction::Vector& v) {
+    ActivationFunction::Vector ret(v.size());
+    for (size_t i = 0; i < v.size(); ++i) {
+        ret[i] = IdApplyDerivative(v[i]);
+    }
+    return ret;
+}
+
 }  // namespace
 
 ActivationFunction ReLu{ReLuApply, ReLuApplyDerivative, ReLuVectorApply, ReLuVectorApplyDerivative};
+ActivationFunction Id{IdApply, IdApplyDerivative, IdVectorApply, IdVectorApplyDerivative};
 }  // namespace nnet
