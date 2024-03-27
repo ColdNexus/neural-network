@@ -4,10 +4,6 @@ cmake_minimum_required(VERSION 3.18)
 # Project name.
 project(nnet)
 
-# Public options for users to control.
-option(NNET_ENABLE_TESTS "Enable testing of the neural network" OFF)
-option(NNET_ENABLE_BENCHMARKS "Enable benchmarking of the neural network" OFF)
-
 # Import CMake modules.
 include(cmake/Ccache.cmake)
 include(cmake/CompileOptions.cmake)
@@ -21,27 +17,25 @@ add_library(nnet
   src/loss-func.cpp
   src/activation-func.cpp
 )
+
 set_compile_options(nnet)
 
 # Namespace library for users.
 add_library(nnet::nnet ALIAS nnet)
 
+add_subdirectory(googletest)
+enable_testing()
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
 # Set search paths.
 target_include_directories(nnet PUBLIC src)
 target_include_directories(nnet PUBLIC eigen)
 target_include_directories(nnet PUBLIC EigenRand)
-#target_include_directories(nnet PUBLIC googletest/googletest/include)
+target_include_directories(nnet PUBLIC googletest)
 
-# Build tests if needed.
-if (${NNET_ENABLE_TESTS})
-  add_subdirectory(tests)
-endif()
+add_executable(runTests 
+  tests/test_googletest.cpp
+)
 
-# Build benchmarks if needed.
-if (${NNET_ENABLE_BENCHMARKS})
-  add_subdirectory(benchmarks)
-endif()
-
-include_directories(eigen)
-include_directories(EigenRand)
-#include_directories(googletest)
+target_link_libraries(runTests gtest gtest_main)
+target_link_libraries(runTests nnet)

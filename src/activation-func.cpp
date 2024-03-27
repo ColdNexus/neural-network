@@ -1,13 +1,13 @@
 #include "activation-func.h"
-#include <algorithm>
 #include "loss-func.h"
+#include <algorithm>
 
 namespace nnet {
 ActivationFunction::ActivationFunction(std::function<ScalarSignature> function,
                                        std::function<ScalarSignature> derivative,
                                        std::function<VectorSignature> vector_function,
                                        std::function<VectorSignature> vector_derivative)
-    : function_(function),
+    : function_(std::move(function)),
       derivative_(derivative),
       vector_function_(vector_function),
       vector_derivative_(vector_derivative){};
@@ -19,10 +19,10 @@ ActivationFunction::Scalar ActivationFunction::ApplyDerivative(Scalar x) {
     return derivative_(x);
 }
 
-ActivationFunction::Vector ActivationFunction::Apply(const Vector& v) {
+ActivationFunction::Vector ActivationFunction::Apply(const Vector &v) {
     return vector_function_(v);
 }
-ActivationFunction::Vector ActivationFunction::ApplyDerivative(const Vector& v) {
+ActivationFunction::Vector ActivationFunction::ApplyDerivative(const Vector &v) {
     return vector_derivative_(v);
 }
 
@@ -33,14 +33,14 @@ ActivationFunction::Scalar ReLuApply(ActivationFunction::Scalar x) {
 ActivationFunction::Scalar ReLuApplyDerivative(ActivationFunction::Scalar x) {
     return x > 0;
 }
-ActivationFunction::Vector ReLuVectorApply(const ActivationFunction::Vector& v) {
+ActivationFunction::Vector ReLuVectorApply(const ActivationFunction::Vector &v) {
     ActivationFunction::Vector ret(v.size());
     for (size_t i = 0; i < v.size(); ++i) {
         ret[i] = ReLuApply(v[i]);
     }
     return ret;
 }
-ActivationFunction::Vector ReLuVectorApplyDerivative(const ActivationFunction::Vector& v) {
+ActivationFunction::Vector ReLuVectorApplyDerivative(const ActivationFunction::Vector &v) {
     ActivationFunction::Vector ret(v.size());
     for (size_t i = 0; i < v.size(); ++i) {
         ret[i] = ReLuApplyDerivative(v[i]);
@@ -54,14 +54,14 @@ ActivationFunction::Scalar IdApply(ActivationFunction::Scalar x) {
 ActivationFunction::Scalar IdApplyDerivative(ActivationFunction::Scalar x) {
     return 1;
 }
-ActivationFunction::Vector IdVectorApply(const ActivationFunction::Vector& v) {
+ActivationFunction::Vector IdVectorApply(const ActivationFunction::Vector &v) {
     ActivationFunction::Vector ret(v.size());
     for (size_t i = 0; i < v.size(); ++i) {
         ret[i] = IdApply(v[i]);
     }
     return ret;
 }
-ActivationFunction::Vector IdVectorApplyDerivative(const ActivationFunction::Vector& v) {
+ActivationFunction::Vector IdVectorApplyDerivative(const ActivationFunction::Vector &v) {
     ActivationFunction::Vector ret(v.size());
     for (size_t i = 0; i < v.size(); ++i) {
         ret[i] = IdApplyDerivative(v[i]);
