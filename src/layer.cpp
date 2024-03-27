@@ -12,7 +12,7 @@ Layer::Layer(unsigned rows, unsigned cols, ActivationFunction sigma) : sigma_(st
 
 Layer::Vector Layer::Calculate(const Vector& x) {
     assert(x.rows() == a_.cols() && "wrong vector size");
-    return sigma_.Apply(a_ * x + b_);
+    return sigma_.Apply0(a_ * x + b_);
 }
 
 unsigned Layer::MatrixRows() {
@@ -26,14 +26,14 @@ unsigned Layer::VecSize() {
 }
 
 Layer::Matrix Layer::EvaluateMatrixModification(const VectorT& u, const Vector& x) {
-    return (x * u * sigma_.ApplyDerivative(a_ * x + b_).asDiagonal()).transpose();
+    return (x * u * sigma_.Derivative(a_ * x + b_)).transpose();
 }
 
 Layer::Vector Layer::EvaluateVectorModification(const VectorT& u, const Vector& x) {
-    return sigma_.ApplyDerivative(a_ * x + b_).asDiagonal() * u.transpose();
+    return sigma_.Derivative(a_ * x + b_) * u.transpose();
 }
 Layer::VectorT Layer::Propagate(const VectorT& u, const Vector& x) {
-    return u * sigma_.ApplyDerivative(a_ * x + b_).asDiagonal() * a_;
+    return u * sigma_.Derivative(a_ * x + b_) * a_;
 }
 
 void Layer::UpdateMatrix(const Matrix& m) {

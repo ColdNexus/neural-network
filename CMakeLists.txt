@@ -39,3 +39,9 @@ add_executable(runTests
 
 target_link_libraries(runTests gtest gtest_main)
 target_link_libraries(runTests nnet)
+
+add_executable(testing
+  tests/test_test.cpp
+)
+
+target_link_libraries(testing nnet)

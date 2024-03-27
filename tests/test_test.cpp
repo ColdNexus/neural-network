@@ -11,10 +11,10 @@ int main() {
   nnet::LossFunction::Vector v2{{2, 2, -2}};
   std::cout << nnet::MSE.Dist(v1, v2) << '\n';
 
-  std::cout << nnet::ReLu.Apply(10) << '\n';
-  std::cout << nnet::ReLu.ApplyDerivative(10) << '\n';
-  std::cout << nnet::ReLu.Apply(v1) << '\n';
-  std::cout << nnet::ReLu.ApplyDerivative(v2) << '\n';
+  // std::cout << nnet::ReLu.Apply0(10) << '\n';
+  // std::cout << nnet::ReLu.Derivative(10) << '\n';
+  std::cout << nnet::ReLu.Apply0(v1) << '\n';
+  std::cout << nnet::ReLu.Derivative(v2) << '\n';
 
   std::cout << "_____________\n";
 
