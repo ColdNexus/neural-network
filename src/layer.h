@@ -1,8 +1,10 @@
 #pragma once
 
+#include "activation-func.h"
+#include "random.h"
+
 #include <Eigen/Dense>
 #include <EigenRand/EigenRand>
-#include "activation-func.h"
 
 namespace nnet {
 class Layer {
@@ -11,31 +13,31 @@ public:
     using Matrix = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
     using Vector = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
     using VectorT = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>;
-    using Generator = Eigen::Rand::P8_mt19937_64;
-    using Distribution = Eigen::Rand::NormalGen<Scalar>;
+    using Index = Eigen::Index;
 
-    Layer(unsigned rows, unsigned cols, ActivationFunction sigma);
+    Layer(Index rows, Index cols, ActivationFunction sigma);
 
-    Vector Calculate(const Vector& x);
-    Matrix EvaluateMatrixModification(const VectorT& u, const Vector& x);
-    Vector EvaluateVectorModification(const VectorT& u, const Vector& x);
-    VectorT Propagate(const VectorT& u, const Vector& x);
+    Vector  Calculate(const Vector& x) const;
+    Matrix  GetDa(const VectorT& u, const Vector& x) const;
+    Vector  GetDb(const VectorT& u, const Vector& x) const;
+    VectorT Propagate(const VectorT& u, const Vector& x) const;
 
-    void UpdateMatrix(const Matrix& m);
-    void UpdateVector(const Vector& v);
+    void UpdateA(const Matrix& m, Scalar rate);
+    void UpdateB(const Vector& v, Scalar rate);
 
-    unsigned MatrixRows();
-    unsigned MatrixCols();
-    unsigned VecSize();
+    Index InSize() const;
+    Index OutSize() const;
 
 private:
-    Matrix a_;
-    Vector b_;
-    ActivationFunction sigma_;
+    static Random& Rand() {
+        static Random r;
+        return r;
+    }
 
-    static constexpr int kSeed = 42;
-    inline static Generator generator{kSeed};
-    inline static Distribution distribution{0, 1};
+private:
+    Matrix             a_;
+    Vector             b_;
+    ActivationFunction sigma_;
 };
 
 }  // namespace nnet

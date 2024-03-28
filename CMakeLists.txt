@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.18)
 # Project name.
 project(nnet)
 
+# Public options for users to control.
+option(NN_ENABLE_TESTS "Enable testing of the neural network" OFF)
+
 # Import CMake modules.
 include(cmake/Ccache.cmake)
 include(cmake/CompileOptions.cmake)
@@ -16,6 +19,7 @@ add_library(nnet
   src/layer.cpp
   src/loss-func.cpp
   src/activation-func.cpp
+  src/random.cpp
 )
 
 set_compile_options(nnet)
@@ -33,15 +37,20 @@ target_include_directories(nnet PUBLIC eigen)
 target_include_directories(nnet PUBLIC EigenRand)
 target_include_directories(nnet PUBLIC googletest)
 
-add_executable(runTests 
-  tests/test_googletest.cpp
-)
+# add_executable(runTests 
+#   tests/test_googletest.cpp
+# )
 
-target_link_libraries(runTests gtest gtest_main)
-target_link_libraries(runTests nnet)
+# target_link_libraries(runTests gtest gtest_main)
+# target_link_libraries(runTests nnet)
 
 add_executable(testing
   tests/test_test.cpp
 )
 
 target_link_libraries(testing nnet)
+
+# Build tests if needed.
+if (${NNET_ENABLE_TESTS})
+  add_subdirectory(tests)
+endif()

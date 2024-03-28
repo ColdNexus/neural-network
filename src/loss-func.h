@@ -1,7 +1,8 @@
 #pragma once
 
-#include <functional>
 #include <Eigen/Dense>
+
+#include <functional>
 
 namespace nnet {
 
@@ -15,14 +16,16 @@ public:
 
     LossFunction(std::function<DistSignature> dist, std::function<GradientSignature> gradient);
 
-    Scalar Dist(const Vector& actual, const Vector& ideal);
-    VectorT Gradient(const Vector& actual, const Vector& ideal);
+    Scalar  Dist(const Vector& actual, const Vector& ideal) const;
+    VectorT Gradient(const Vector& actual, const Vector& ideal) const;
+
+    static LossFunction MSE();
 
 private:
-    std::function<DistSignature> dist_;
+    std::function<DistSignature>     dist_;
     std::function<GradientSignature> gradient_;
 };
 
-extern LossFunction MSE;  // NOLINT
+constexpr auto MSE = LossFunction::MSE;  // NOLINT
 
 }  // namespace nnet

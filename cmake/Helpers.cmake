@@ -10,6 +10,7 @@ function(add_nnet_test NAME)
   add_executable(${NAME} ${NAME}.cpp)
   set_compile_options(${NAME})
   target_link_libraries(${NAME} PRIVATE nnet::nnet)
+  target_link_libraries(${NAME} PRIVATE gtest gtest_main)
 endfunction()
 
 function (add_nnet_benchmark NAME)

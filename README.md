@@ -6,7 +6,7 @@ My coursework in second year in HSE AMI.
 ```shell
 mkdir build
 cd build
-cmake .. -D NNET_ENABLE_TESTS=ON -D NNET_ENABLE_BENCHMARKS=ON
+cmake .. -D NNET_ENABLE_TESTS=ON
 ```
 
 ## Test
