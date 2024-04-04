@@ -15,7 +15,7 @@ public:
     using VectorT = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>;
     using Index = Eigen::Index;
 
-    Layer(Index rows, Index cols, ActivationFunction sigma);
+    Layer(Index input_size, Index ouput_size, ActivationFunction sigma);
 
     Vector  Calculate(const Vector& x) const;
     Matrix  GetDa(const VectorT& u, const Vector& x) const;

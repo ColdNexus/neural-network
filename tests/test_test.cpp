@@ -2,21 +2,32 @@
 #include "layer.h"
 #include "loss-func.h"
 #include "net.h"
+#include "usings.h"
 
 #include <cassert>
 #include <iostream>
 
+void Hello() {
+    std::cout << "Hello!\n";
+}
+
 int main() {
-    nnet::LossFunction::Vector v1{{2, 2, -5}};
-    nnet::LossFunction::Vector v2{{2, 2, -2}};
-    std::cout << nnet::MSE().Dist(v1, v2) << '\n';
+    Matrix m(2, 3);
+    m << 1, 2, 3, 4, 5, 6;
+    // std::cout << m/m << '\n';
 
-    // std::cout << nnet::ReLu.Apply0(10) << '\n';
-    // std::cout << nnet::ReLu.Derivative(10) << '\n';
-    std::cout << nnet::ReLu().Apply0(v1) << '\n';
-    std::cout << nnet::ReLu().Derivative(v2) << '\n';
+    // auto x = m.cwiseProduct(1/m);
+    std::cout << m.cwiseInverse().cwiseSqrt() << '\n';
+    m.array() += 1;
+    std::cout << m << '\n';
 
-    std::cout << "_____________\n";
+    Vector v(3);
+    v << 1, 2, 3;
+    std::cout << v << '\n';
+
+    auto y = v.cwiseProduct(v);
+    std::cout << v << '\n';
+    std::cout << y << '\n';
 
     std::vector<nnet::Net::Vector> data;
     std::vector<nnet::Net::Vector> ans;
@@ -35,7 +46,7 @@ int main() {
     }
 
     nnet::Net net({2, 1}, {nnet::Id()});
-    net.Train(data, ans, nnet::MSE(), 10);
+    net.Train(data, ans, nnet::MSE(), 400);
 
     nnet::Net::Vector test1{{2, 2}};
     nnet::Net::Vector test2{{3, 3}};

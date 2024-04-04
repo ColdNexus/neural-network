@@ -7,12 +7,12 @@
 
 namespace nnet {
 
-Layer::Layer(Index rows, Index cols, ActivationFunction sigma)
-    : a_(Layer::Rand().RandomMatrix(rows, cols)),
-      b_(Layer::Rand().RandomVector(rows)),
+Layer::Layer(Index input_size, Index output_size, ActivationFunction sigma)
+    : a_(Layer::Rand().RandomMatrix(output_size, input_size)),
+      b_(Layer::Rand().RandomVector(output_size)),
       sigma_(std::move(sigma)) {
-    assert(rows >= 0 && "rows should be non negative");
-    assert(cols >= 0 && "cols should be non negative");
+    assert(output_size >= 0 && "output should be non negative");
+    assert(input_size >= 0 && "input should be non negative");
 }
 
 Layer::Vector Layer::Calculate(const Vector& x) const {

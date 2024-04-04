@@ -18,7 +18,7 @@ Net::Net(std::initializer_list<Index>              layers_sizes,
     unsigned size = *layer_iter;
 
     for (++layer_iter; layer_iter != layers_sizes.end(); ++layer_iter, ++func_iter) {
-        layers_.emplace_back(*layer_iter, size, *func_iter);
+        layers_.emplace_back(size, *layer_iter, *func_iter);
         size = *layer_iter;
     }
 };
@@ -33,14 +33,49 @@ Net::Vector Net::Predict(const Vector& v) const {
 
 void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans, LossFunction loss,
                 int epochs) {
-    Scalar              step = kDefaultStep;
+
+    Scalar alpha = 0.001;
+    Scalar beta1 = 0.9;
+    Scalar beta2 = 0.999;
+    Scalar eps = 1e-8;
+
     std::vector<Matrix> a_modifications;
     std::vector<Vector> b_modifications;
+
+    std::vector<Matrix> m_a;
+    std::vector<Vector> m_b;
+    std::vector<Matrix> m_at;
+    std::vector<Vector> m_bt;
+
+    std::vector<Matrix> v_a;
+    std::vector<Vector> v_b;
+    std::vector<Matrix> v_at;
+    std::vector<Vector> v_bt;
+
     a_modifications.reserve(layers_.size());
+    m_a.reserve(layers_.size());
+    v_a.reserve(layers_.size());
+    m_at.reserve(layers_.size());
+    v_at.reserve(layers_.size());
+
     b_modifications.reserve(layers_.size());
+    m_b.reserve(layers_.size());
+    v_b.reserve(layers_.size());
+    m_bt.reserve(layers_.size());
+    v_bt.reserve(layers_.size());
+
     for (size_t i = 0; i < layers_.size(); ++i) {
         a_modifications.emplace_back(Matrix::Zero(layers_[i].OutSize(), layers_[i].InSize()));
         b_modifications.emplace_back(Vector::Zero(layers_[i].OutSize()));
+
+        m_a.emplace_back(Matrix::Zero(layers_[i].OutSize(), layers_[i].InSize()));
+        m_b.emplace_back(Vector::Zero(layers_[i].OutSize()));
+        v_a.emplace_back(Matrix::Zero(layers_[i].OutSize(), layers_[i].InSize()));
+        v_b.emplace_back(Vector::Zero(layers_[i].OutSize()));
+        m_at.emplace_back(Matrix::Zero(layers_[i].OutSize(), layers_[i].InSize()));
+        m_bt.emplace_back(Vector::Zero(layers_[i].OutSize()));
+        v_at.emplace_back(Matrix::Zero(layers_[i].OutSize(), layers_[i].InSize()));
+        v_bt.emplace_back(Vector::Zero(layers_[i].OutSize()));
     }
 
     std::vector<Vector> x(layers_.size());
@@ -48,9 +83,8 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
     Vector              res;
     VectorT             u;
 
-    for (int tt = 0; tt < epochs; ++tt) {
+    for (int t = 1; t <= epochs; ++t) {
         for (size_t i = 0; i < data.size(); ++i) {
-
             tmp = data[i];
             for (size_t j = 0; j < layers_.size(); ++j) {
                 x[j] = tmp;
@@ -64,16 +98,32 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
                 b_modifications[k] += layers_[k].GetDb(u, x[k]);
                 u = layers_[k].Propagate(u, x[k]);
             }
-        }
 
-        for (size_t i = 0; i < layers_.size(); ++i) {
-            layers_[i].UpdateA(a_modifications[i], -step);
-            layers_[i].UpdateB(b_modifications[i], -step);
-            a_modifications[i].setZero();
-            b_modifications[i].setZero();
+            for (size_t k = 0; k < layers_.size(); ++k) {
+                m_a[k] = beta1 * m_a[k] + (1 - beta1) * a_modifications[k];
+                v_a[k] = beta2 * v_a[k] +
+                         (1 - beta2) * a_modifications[k].cwiseProduct(a_modifications[k]);
+
+                m_b[k] = beta1 * m_b[k] + (1 - beta1) * b_modifications[k];
+                v_b[k] = beta2 * v_b[k] +
+                         (1 - beta2) * b_modifications[k].cwiseProduct(b_modifications[k]);
+
+                m_at[k] = m_a[k] / (1 - std::pow(beta1, t));
+                v_at[k] = (v_a[k] / (1 - std::pow(beta2, t))).cwiseSqrt();
+                v_at[k].array() += eps;
+
+                m_bt[k] = m_b[k] / (1 - std::pow(beta1, t));
+                v_bt[k] = (v_b[k] / (1 - std::pow(beta2, t))).cwiseSqrt();
+                v_bt[k].array() += eps;
+            }
+            for (size_t i = 0; i < layers_.size(); ++i) {
+                layers_[i].UpdateA(m_at[i].cwiseProduct(v_at[i].cwiseInverse()), -alpha);
+                layers_[i].UpdateB(m_bt[i].cwiseProduct(v_bt[i].cwiseInverse()), -alpha);
+                a_modifications[i].setZero();
+                b_modifications[i].setZero();
+            }
         }
-        step /= 2;
-        std::cout << "epoch " << tt << '\n';
+        std::cout << "epoch " << t << '\n';
     }
 }
 

@@ -24,9 +24,6 @@ public:
     Vector Predict(const Vector& v) const;
 
 private:
-    static constexpr Scalar kDefaultStep = 0.0005;
-
-private:
     std::vector<Layer> layers_;
 };
 

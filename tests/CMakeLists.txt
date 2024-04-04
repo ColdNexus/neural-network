@@ -1,1 +1,1 @@
-add_nnet_test(test_googletest)
+add_nnet_test(simple)
