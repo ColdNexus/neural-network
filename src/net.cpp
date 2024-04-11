@@ -127,4 +127,21 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
     }
 }
 
+std::ostream& operator<<(std::ostream& stream, const Net& net) {
+    stream << net.layers_.size() << '\n';
+    for (size_t i = 0; i < net.layers_.size(); ++i) {
+        stream << net.layers_[i] << '\n';
+    }
+    return stream;
+}
+std::istream& operator>>(std::istream& stream, Net& net) {
+    size_t size;
+    stream >> size;
+    net.layers_.resize(size);
+    for (size_t i = 0; i < size; ++i) {
+        stream >> net.layers_[i];
+    }
+    return stream;
+}
+
 }  // namespace nnet

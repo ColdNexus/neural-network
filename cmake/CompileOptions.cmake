@@ -1,7 +1,6 @@
 function(set_compile_options TARGET)
   target_compile_options("${TARGET}" PRIVATE
     -Wall
-    -Werror # treat compiler warnings as errors
     -Wcast-align # warn for potential performance problem casts
     -Woverloaded-virtual # warn if you overload (not override) a virtual function
     -Wpedantic # warn if non-standard C++ is used

@@ -16,12 +16,16 @@ public:
     using VectorT = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>;
     using Index = Eigen::Index;
 
+    Net() = default;
     Net(std::initializer_list<Index>, std::initializer_list<ActivationFunction>);
 
     void Train(const std::vector<Vector>& data, const std::vector<Vector>& ans, LossFunction loss,
                int epochs);
 
     Vector Predict(const Vector& v) const;
+
+    friend std::ostream& operator<<(std::ostream& stream, const Net& net);
+    friend std::istream& operator>>(std::istream& stream, Net& net);
 
 private:
     std::vector<Layer> layers_;

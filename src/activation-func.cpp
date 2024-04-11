@@ -4,8 +4,8 @@
 #include <algorithm>
 
 namespace nnet {
-ActivationFunction::ActivationFunction(Function0 function, Function1 derivative)
-    : func0_(std::move(function)), func1_(std::move(derivative)) {
+ActivationFunction::ActivationFunction(Function0 function, Function1 derivative, Names name)
+    : func0_(std::move(function)), func1_(std::move(derivative)), name_(name) {
     assert(func1_(Vector::Zero(4)).rows() == func1_(Vector::Zero(4)).cols() &&
            "derivative should be a square matrix");
     assert(func0_(Vector::Zero(4)).rows() == 4 &&
@@ -13,10 +13,25 @@ ActivationFunction::ActivationFunction(Function0 function, Function1 derivative)
 };
 
 ActivationFunction::Vector ActivationFunction::Apply0(const Vector &v) const {
+    assert(IsInitialized() && "Activation function is NOT initialized");
     return func0_(v);
 }
 ActivationFunction::Matrix ActivationFunction::Derivative(const Vector &v) const {
+    assert(IsInitialized() && "Activation function is NOT initialized");
     return func1_(v);
+}
+
+bool ActivationFunction::IsInitialized() const {
+    return static_cast<bool>(func0_);
+}
+
+static ActivationFunction NameToAF(ActivationFunction::Names name) {
+    switch (name) {
+        case ActivationFunction::Names::ReLu:
+            return nnet::ReLu();
+        case ActivationFunction::Names::Id:
+            return nnet::Id();
+    }
 }
 
 namespace {
@@ -38,13 +53,34 @@ ActivationFunction::Matrix IdDerivative(const ActivationFunction::Vector &x) {
     return ActivationFunction::Matrix::Identity(x.rows(), x.rows());
 }
 
+template <typename Enumeration>
+typename std::underlying_type<Enumeration>::type AsInteger(Enumeration const value) {
+    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
+
 }  // namespace
 
 ActivationFunction ActivationFunction::ReLu() {
-    return ActivationFunction(ReLuApply, ReLuDerivative);
+    return ActivationFunction(ReLuApply, ReLuDerivative, Names::ReLu);
 };
 ActivationFunction ActivationFunction::Id() {
-    return ActivationFunction(IdApply, IdDerivative);
+    return ActivationFunction(IdApply, IdDerivative, Names::Id);
+}
+
+bool ActivationFunction::operator==(const ActivationFunction &af) const {
+    return name_ == af.name_;
+}
+
+std::ostream &operator<<(std::ostream &stream, const ActivationFunction &af) {
+    stream << AsInteger(af.name_);
+    return stream;
+}
+
+std::istream &operator>>(std::istream &stream, ActivationFunction &af) {
+    int x = 0;
+    stream >> x;
+    af = NameToAF(ActivationFunction::Names{x});
+    return stream;
 }
 
 }  // namespace nnet

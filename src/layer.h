@@ -15,6 +15,8 @@ public:
     using VectorT = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>;
     using Index = Eigen::Index;
 
+
+    explicit Layer() = default;
     Layer(Index input_size, Index ouput_size, ActivationFunction sigma);
 
     Vector  Calculate(const Vector& x) const;
@@ -27,6 +29,11 @@ public:
 
     Index InSize() const;
     Index OutSize() const;
+
+    bool IsInitialized() const;
+
+    friend std::ostream& operator<<(std::ostream& stream, const Layer& layer);
+    friend std::istream& operator>>(std::istream& stream, Layer& layer);
 
 private:
     static Random& Rand() {
