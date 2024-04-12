@@ -83,6 +83,8 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
     Vector              res;
     VectorT             u;
 
+    Scalar dist = 0;
+
     for (int t = 1; t <= epochs; ++t) {
         for (size_t i = 0; i < data.size(); ++i) {
             tmp = data[i];
@@ -90,6 +92,12 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
                 x[j] = tmp;
                 tmp = layers_[j].Calculate(tmp);
             }
+            dist += loss.Dist(tmp, ans[i]);
+            
+            if (i % 100 == 0) {
+                std::cout << loss.Dist(tmp, ans[i]) << '\n';
+            }
+
             u = loss.Gradient(tmp, ans[i]);
 
             for (size_t j = 0; j < layers_.size(); ++j) {
@@ -124,6 +132,7 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
             }
         }
         std::cout << "epoch " << t << '\n';
+        std::cout << "dist " << dist / data.size() << '\n';
     }
 }
 

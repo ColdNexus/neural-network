@@ -9,10 +9,6 @@
 #include <iostream>
 #include <unordered_map>
 
-void Hello() {
-    std::cout << "Hello!\n";
-}
-
 int main() {
     // std::vector<nnet::Net::Vector> data;
     // std::vector<nnet::Net::Vector> ans;

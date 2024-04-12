@@ -37,18 +37,17 @@ target_include_directories(nnet PUBLIC eigen)
 target_include_directories(nnet PUBLIC EigenRand)
 target_include_directories(nnet PUBLIC googletest)
 
-# add_executable(runTests 
-#   tests/test_googletest.cpp
-# )
-
-# target_link_libraries(runTests gtest gtest_main)
-# target_link_libraries(runTests nnet)
-
 add_executable(testing
   tests/test_test.cpp
 )
 
 target_link_libraries(testing nnet)
+
+add_executable(mnist
+  tests/test_mnist.cpp
+)
+
+target_link_libraries(mnist nnet)
 
 # Build tests if needed.
 if (${NNET_ENABLE_TESTS})
