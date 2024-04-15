@@ -47,13 +47,13 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
         for (size_t i = 0; i < data.size(); ++i) {
             ++time;
             Forward(data[i], &outputs);
-            dist += loss.Dist(data.back(), ans[i]);
+            dist += loss.Dist(outputs.back(), ans[i]);
             Backward(outputs, ans[i], loss, &optimizer);
             Update(optimizer, time);
 
-            if (debug && i % (data.size() / 10) == 0) {
-                std::cout << 10 * i / (data.size() / 10) << " happened of epoch\n";
-            }
+            // if (debug && i % (data.size() / 10) == 0) {
+            //     std::cout << 10 * i / (data.size() / 10) << " happened of epoch\n";
+            // }
         }
         if (debug) {
             std::cout << cur_epoch << " epoch ended\n";
@@ -65,6 +65,7 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
             }
             return;
         }
+        dist = 0;
     }
 }
 

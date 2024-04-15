@@ -8,6 +8,7 @@ build_asan
 .vscode
 tests/mnist/*
 tests/pretrained/*
+tests/train_data/*
 
 # github generated:
 
