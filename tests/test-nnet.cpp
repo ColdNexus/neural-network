@@ -11,13 +11,13 @@
 #include <chrono>
 
 using Vector = nnet::Net::Vector;
-using TimePoint = std::chrono::system_clock::time_point;
+using TimePoint = std::chrono::steady_clock::time_point;
 
 namespace nnet {
 namespace {
 
-auto Now() {
-    return std::chrono::high_resolution_clock::now();
+TimePoint Now() {
+    return std::chrono::steady_clock::now();
 }
 
 std::filesystem::path cwd = std::filesystem::current_path();
@@ -49,7 +49,7 @@ public:
     ~Printer() {
         std::cout << "____" << name_ << "___FINISHED_____\n";
         std::cout << "TIME: "
-                  << Now() - time_ << '\n';
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(Now() - time_).count() << '\n';
         std::cout << '\n';
     }
 
@@ -161,7 +161,7 @@ Net TrainXor() {
 
 void TestMnist() {
     // Net net = TrainMnist();
-    Net           net;
+    Net net;
     std::ifstream inp(mnist_params);
     inp >> net;
 
