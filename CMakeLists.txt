@@ -33,9 +33,17 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # Set search paths.
 target_include_directories(nnet PUBLIC src)
+target_include_directories(nnet PUBLIC tests)
 target_include_directories(nnet PUBLIC eigen)
 target_include_directories(nnet PUBLIC EigenRand)
 target_include_directories(nnet PUBLIC googletest)
+
+add_executable(run
+  main.cpp
+  tests/except.cpp
+  tests/test-nnet.cpp
+)
+target_link_libraries(run nnet)
 
 add_executable(testing
   tests/test_test.cpp

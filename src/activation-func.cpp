@@ -31,6 +31,8 @@ static ActivationFunction NameToAF(ActivationFunction::Names name) {
             return nnet::ReLu();
         case ActivationFunction::Names::Id:
             return nnet::Id();
+        case ActivationFunction::Names::SoftMax:
+            return nnet::SoftMax();
     }
 }
 
@@ -53,6 +55,27 @@ ActivationFunction::Matrix IdDerivative(const ActivationFunction::Vector &x) {
     return ActivationFunction::Matrix::Identity(x.rows(), x.rows());
 }
 
+ActivationFunction::Vector StableSoftMaxApply(const ActivationFunction::Vector &v) {
+    auto shiftv = v.array() - v.maxCoeff();
+    auto exps = shiftv.exp();
+    return exps / exps.sum();
+}
+
+ActivationFunction::Matrix SoftMaxDerivative(const ActivationFunction::Vector &v) {
+    auto ans = StableSoftMaxApply(v);
+    ActivationFunction::Matrix ret(v.rows(), v.rows());
+    for (int i = 0; i < v.rows(); ++i) {
+        for (int j = 0; j < v.rows(); ++j) {
+            if (i == j) {
+                ret(i, j) = ans(i) * (1 - ans(j));
+            } else {
+                ret(i, j) = -ans(i) * ans(j);
+            }
+        }
+    }
+    return ret;
+}
+
 template <typename Enumeration>
 typename std::underlying_type<Enumeration>::type AsInteger(Enumeration const value) {
     return static_cast<typename std::underlying_type<Enumeration>::type>(value);
@@ -66,6 +89,10 @@ ActivationFunction ActivationFunction::ReLu() {
 ActivationFunction ActivationFunction::Id() {
     return ActivationFunction(IdApply, IdDerivative, Names::Id);
 }
+ActivationFunction ActivationFunction::SoftMax() {
+    return ActivationFunction(StableSoftMaxApply, SoftMaxDerivative, Names::SoftMax);
+}
+
 
 bool ActivationFunction::operator==(const ActivationFunction &af) const {
     return name_ == af.name_;

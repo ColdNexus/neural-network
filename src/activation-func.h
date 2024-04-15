@@ -18,7 +18,7 @@ public:
     using Function0 = std::function<Signature0>;
     using Function1 = std::function<Signature1>;
 
-    enum class Names { ReLu, Id };
+    enum class Names { ReLu, Id, SoftMax };
 
     ActivationFunction() = default;
     ActivationFunction(Function0 function, Function1 derivative, Names name);
@@ -30,10 +30,11 @@ public:
 
     static ActivationFunction ReLu();
     static ActivationFunction Id();
+    static ActivationFunction SoftMax();
 
     static ActivationFunction NameToAF(Names name);
 
-    bool operator==(const ActivationFunction& af) const;
+    bool                 operator==(const ActivationFunction& af) const;
     friend std::ostream& operator<<(std::ostream& stream, const ActivationFunction& af);
     friend std::istream& operator>>(std::istream& stream, ActivationFunction& af);
 
@@ -45,7 +46,8 @@ public:
     Names name_;
 };
 
-constexpr auto ReLu = ActivationFunction::ReLu;  // NOLINT
-constexpr auto Id = ActivationFunction::Id;      // NOLINT
+constexpr auto ReLu = ActivationFunction::ReLu;        // NOLINT
+constexpr auto Id = ActivationFunction::Id;            // NOLINT
+constexpr auto SoftMax = ActivationFunction::SoftMax;  // NOLINT
 
 }  // namespace nnet

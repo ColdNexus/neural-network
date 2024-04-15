@@ -94,7 +94,8 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
             }
             dist += loss.Dist(tmp, ans[i]);
             
-            if (i % 100 == 0) {
+            if (i % (data.size()/10) == 0) {
+                std::cout << i / (data.size()/10) << " happened of epoch\n";
                 std::cout << loss.Dist(tmp, ans[i]) << '\n';
             }
 
@@ -133,6 +134,7 @@ void Net::Train(const std::vector<Vector>& data, const std::vector<Vector>& ans,
         }
         std::cout << "epoch " << t << '\n';
         std::cout << "dist " << dist / data.size() << '\n';
+        dist = 0;
     }
 }
 

@@ -6,6 +6,8 @@ asan_build
 build_asan
 .cache
 .vscode
+tests/mnist/*
+tests/pretrained/*
 
 # github generated:
 
