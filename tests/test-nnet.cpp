@@ -36,6 +36,10 @@ std::string linear_ans = data_dir + "ans_linear";
 std::string linear_test = data_dir + "test_linear";
 std::string linear_test_ans = data_dir + "test_ans_linear";
 
+std::string xor_train = data_dir + "train_xor";
+std::string xor_ans = data_dir + "ans_xor";
+std::string xor_test = data_dir + "test_xor";
+std::string xor_test_ans = data_dir + "test_ans_xor";
 class Printer {
 public:
     Printer(std::string name) : name_(std::move(name)), time_(Now()) {
@@ -53,6 +57,16 @@ private:
     std::string name_;
     TimePoint   time_;
 };
+
+int MaxInd(const Vector& v) {
+    int ret = 0;
+    for (int i = 1; i < v.rows(); ++i) {
+        if (v(i) > v(ret)) {
+            ret = i;
+        }
+    }
+    return ret;
+}
 }  // namespace
 
 std::vector<Vector> ReadData(std::string file_name) {
@@ -76,14 +90,15 @@ std::vector<Vector> NumToInd(const std::vector<Vector>& ans, int max_num) {
     ret.reserve(ans.size());
     for (int i = 0; i < ans.size(); ++i) {
         ret.emplace_back(Vector::Zero(max_num + 1));
-        ret.back()[ans[i](0)] = 1;
+        ret.back()[static_cast<int>(ans[i](0))] = 1;
     }
     return ret;
 }
 
 void RunTests() {
     std::cout << "Tests started\n";
-    TestLinear();
+    // TestLinear();
+    TestXor();
     // TestMnist();
     std::cout << "Tests finished\n";
 }
@@ -96,7 +111,6 @@ void TestLinear() {
     LossFunction loss = MSE();
     double       acc = 0;
     for (size_t i = 0; i < x.size(); ++i) {
-        // std::cout << net.Predict(x[i]) << ' ' << ans[i] << '\n';
         acc += loss.Dist(net.Predict(x[i]), ans[i]);
     }
     std::cout << "TestLinear accuracy: " << acc / x.size() << '\n';
@@ -111,6 +125,37 @@ Net TrainLinear() {
     {
         Printer p("TrainLinear 5 -> 5 -> 1, {ReLu, Id}, " + std::to_string(epochs) + " epochs");
         net.Train(x, ans, MSE(), epochs, 1e-8, false);
+    }
+    return net;
+}
+
+void TestXor() {
+    Net                 net = TrainXor();
+    std::vector<Vector> x = ReadData(xor_test);
+    std::vector<Vector> y = ReadData(xor_test_ans);
+    std::vector<Vector> ans = NumToInd(y, 1);
+
+    LossFunction loss = MSE();
+    int          hits = 0;
+    for (size_t i = 0; i < x.size(); ++i) {
+        hits += MaxInd(net.Predict(x[i])) == MaxInd(ans[i]);
+    }
+    std::cout << "TestXor hits: " << hits << " out of " << x.size() << '\n';
+    std::cout << '\n';
+}
+
+Net TrainXor() {
+    std::vector<Vector> x = ReadData(xor_train);
+    std::vector<Vector> y = ReadData(xor_ans);
+    std::vector<Vector> ans = NumToInd(y, 1);
+
+    Net net({2, 4, 4, 2}, {ReLu(), ReLu(), SoftMax()});
+    int epochs = 500;
+
+    {
+        Printer p("TrainXor 2 -> 4 -> 4 -> 2, ReLu ReLu SoftMax, " + std::to_string(epochs) +
+                  " epochs");
+        net.Train(x, ans, MSE(), epochs, 1e-8, true);
     }
     return net;
 }
