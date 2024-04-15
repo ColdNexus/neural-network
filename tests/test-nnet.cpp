@@ -49,7 +49,7 @@ public:
     ~Printer() {
         std::cout << "____" << name_ << "___FINISHED_____\n";
         std::cout << "TIME: "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(Now() - time_) << '\n';
+                  << Now() - time_ << '\n';
         std::cout << '\n';
     }
 
