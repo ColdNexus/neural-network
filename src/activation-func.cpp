@@ -62,7 +62,7 @@ ActivationFunction::Vector StableSoftMaxApply(const ActivationFunction::Vector &
 }
 
 ActivationFunction::Matrix SoftMaxDerivative(const ActivationFunction::Vector &v) {
-    auto ans = StableSoftMaxApply(v);
+    auto                       ans = StableSoftMaxApply(v);
     ActivationFunction::Matrix ret(v.rows(), v.rows());
     for (int i = 0; i < v.rows(); ++i) {
         for (int j = 0; j < v.rows(); ++j) {
@@ -92,7 +92,6 @@ ActivationFunction ActivationFunction::Id() {
 ActivationFunction ActivationFunction::SoftMax() {
     return ActivationFunction(StableSoftMaxApply, SoftMaxDerivative, Names::SoftMax);
 }
-
 
 bool ActivationFunction::operator==(const ActivationFunction &af) const {
     return name_ == af.name_;

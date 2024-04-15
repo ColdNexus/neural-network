@@ -15,7 +15,6 @@ public:
     using VectorT = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>;
     using Index = Eigen::Index;
 
-
     explicit Layer() = default;
     Layer(Index input_size, Index ouput_size, ActivationFunction sigma);
 

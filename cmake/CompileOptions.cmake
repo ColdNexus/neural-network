@@ -1,4 +1,5 @@
 function(set_compile_options TARGET)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options("${TARGET}" PRIVATE
     -Wall
     -Wcast-align # warn for potential performance problem casts
@@ -7,4 +8,5 @@ function(set_compile_options TARGET)
     -Wnull-dereference # warn if a null dereference is detected
     -Wformat=2 # warn on security issues around functions that format output (i.e. printf)
   )
+endif()
 endfunction()

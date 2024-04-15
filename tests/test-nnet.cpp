@@ -97,9 +97,9 @@ std::vector<Vector> NumToInd(const std::vector<Vector>& ans, int max_num) {
 
 void RunTests() {
     std::cout << "Tests started\n";
-    // TestLinear();
+    TestLinear();
     TestXor();
-    // TestMnist();
+    TestMnist();
     std::cout << "Tests finished\n";
 }
 
@@ -135,8 +135,7 @@ void TestXor() {
     std::vector<Vector> y = ReadData(xor_test_ans);
     std::vector<Vector> ans = NumToInd(y, 1);
 
-    LossFunction loss = MSE();
-    int          hits = 0;
+    int hits = 0;
     for (size_t i = 0; i < x.size(); ++i) {
         hits += MaxInd(net.Predict(x[i])) == MaxInd(ans[i]);
     }
@@ -155,33 +154,42 @@ Net TrainXor() {
     {
         Printer p("TrainXor 2 -> 4 -> 4 -> 2, ReLu ReLu SoftMax, " + std::to_string(epochs) +
                   " epochs");
-        net.Train(x, ans, MSE(), epochs, 1e-8, true);
+        net.Train(x, ans, MSE(), epochs, 1e-8, false);
     }
     return net;
 }
 
 void TestMnist() {
-    Net net = TrainMnist();
+    // Net net = TrainMnist();
+    Net           net;
+    std::ifstream inp(mnist_params);
+    inp >> net;
+
+    std::vector<Vector> x = ReadData(mnist_data_test);
+    std::vector<Vector> y = ReadData(mnist_ans_test);
+    std::vector<Vector> ans = NumToInd(y, 9);
+
+    int hits = 0;
+    for (size_t i = 0; i < x.size(); ++i) {
+        hits += MaxInd(net.Predict(x[i])) == MaxInd(ans[i]);
+    }
+    std::cout << "TestMnist hits: " << hits << " out of " << x.size() << '\n';
+    std::cout << '\n';
 }
 
 Net TrainMnist() {
+    std::vector<Vector> x = ReadData(mnist_data_train);
+    std::vector<Vector> y = ReadData(mnist_ans_train);
+    std::vector<Vector> ans = NumToInd(y, 9);
 
-    std::fstream inp(mnist_params);
-    Net          net;
-    if (inp.is_open()) {
-        inp >> net;
-        // return net;
+    Net net({784, 400, 120, 10}, {nnet::ReLu(), nnet::ReLu(), nnet::SoftMax()});
+    int epochs = 1;
+    {
+        Printer p("TrainMnist 784 -> 400 -> 120 -> 10, ReLu ReLu SoftMax " +
+                  std::to_string(epochs) + " epochs");
+        net.Train(x, ans, MSE(), epochs, 1e-8, true);
     }
 
-    std::vector<Vector> x = ReadData(mnist_data_train);
-    std::vector<Vector> ans = ReadData(mnist_ans_train);
-    std::vector<Vector> y = NumToInd(ans, 9);
-
-    // Net net({784, 400, 120, 10}, {nnet::ReLu(), nnet::ReLu(), nnet::SoftMax()});
-    net.Train(x, y, nnet::MSE(), 200);
-
-    std::ofstream file("mnist_params.txt");
-    file << net;
     return net;
 }
 }  // namespace nnet
