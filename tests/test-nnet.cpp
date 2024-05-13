@@ -49,7 +49,8 @@ public:
     ~Printer() {
         std::cout << "____" << name_ << "___FINISHED_____\n";
         std::cout << "TIME: "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(Now() - time_).count() << '\n';
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(Now() - time_).count()
+                  << '\n';
         std::cout << '\n';
     }
 
@@ -95,6 +96,15 @@ std::vector<Vector> NumToInd(const std::vector<Vector>& ans, int max_num) {
     return ret;
 }
 
+std::vector<Net::TrainData> Zip(std::vector<Vector> data, std::vector<Vector> ans) {
+    std::vector<Net::TrainData> ret(data.size());
+    for (size_t i = 0; i < data.size(); ++i) {
+        ret[i].data = std::move(data[i]);
+        ret[i].ans = std::move(ans[i]);
+    }
+    return ret;
+}
+
 void RunTests() {
     std::cout << "Tests started\n";
     TestLinear();
@@ -120,11 +130,12 @@ void TestLinear() {
 Net TrainLinear() {
     std::vector<Vector> x = ReadData(linear_train);
     std::vector<Vector> ans = ReadData(linear_ans);
-    Net                 net({5, 5, 1}, {ReLu(), Id()});
-    int                 epochs = 200;
+    auto                data = Zip(x, ans);
+    Net                 net({5, 1}, {Id()});
+    int                 epochs = 500;
     {
         Printer p("TrainLinear 5 -> 5 -> 1, {ReLu, Id}, " + std::to_string(epochs) + " epochs");
-        net.Train(x, ans, MSE(), epochs, 1e-8, false);
+        net.TrainSGD(data, MSE(), epochs);
     }
     return net;
 }
@@ -147,23 +158,23 @@ Net TrainXor() {
     std::vector<Vector> x = ReadData(xor_train);
     std::vector<Vector> y = ReadData(xor_ans);
     std::vector<Vector> ans = NumToInd(y, 1);
+    auto                data = Zip(x, ans);
 
     Net net({2, 4, 4, 2}, {ReLu(), ReLu(), SoftMax()});
-    int epochs = 500;
+    int epochs = 1000;
 
     {
         Printer p("TrainXor 2 -> 4 -> 4 -> 2, ReLu ReLu SoftMax, " + std::to_string(epochs) +
                   " epochs");
-        net.Train(x, ans, MSE(), epochs, 1e-8, false);
+        net.TrainSGD(data, MSE(), epochs);
     }
     return net;
 }
 
 void TestMnist() {
-    // Net net = TrainMnist();
-    Net net;
-    std::ifstream inp(mnist_params);
-    inp >> net;
+    Net           net = TrainMnist();
+    std::ofstream out(mnist_params);
+    out << net;
 
     std::vector<Vector> x = ReadData(mnist_data_test);
     std::vector<Vector> y = ReadData(mnist_ans_test);
@@ -181,13 +192,14 @@ Net TrainMnist() {
     std::vector<Vector> x = ReadData(mnist_data_train);
     std::vector<Vector> y = ReadData(mnist_ans_train);
     std::vector<Vector> ans = NumToInd(y, 9);
+    auto                data = Zip(x, ans);
 
-    Net net({784, 400, 120, 10}, {nnet::ReLu(), nnet::ReLu(), nnet::SoftMax()});
-    int epochs = 1;
+    Net net({784, 128, 10}, {nnet::ReLu(), nnet::SoftMax()});
+    int epochs = 100;
     {
-        Printer p("TrainMnist 784 -> 400 -> 120 -> 10, ReLu ReLu SoftMax " +
-                  std::to_string(epochs) + " epochs");
-        net.Train(x, ans, MSE(), epochs, 1e-8, true);
+        Printer p("TrainMnist 784 -> 128 -> 10, ReLu SoftMax " + std::to_string(epochs) +
+                  " epochs");
+        net.TrainSGD(data, MSE(), epochs, 8);
     }
 
     return net;

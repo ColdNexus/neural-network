@@ -42,8 +42,9 @@ Layer::Matrix Layer::GetDa(const VectorT& u, const Vector& x) const {
 Layer::Vector Layer::GetDb(const VectorT& u, const Vector& x) const {
     assert(IsInitialized() && "layer is NOT initialized");
     assert(sigma_.Derivative(a_ * x + b_).cols() == u.cols() && "cannot multiply, wrong size");
-    return sigma_.Derivative(a_ * x + b_) * u.transpose();
+    return (u * sigma_.Derivative(a_ * x + b_)).transpose();
 }
+
 Layer::VectorT Layer::Propagate(const VectorT& u, const Vector& x) const {
     assert(IsInitialized() && "layer is NOT initialized");
     assert(u.cols() == sigma_.Derivative(a_ * x + b_).rows() && "cannot multiply, wrong size");

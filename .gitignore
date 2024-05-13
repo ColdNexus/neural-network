@@ -2,6 +2,7 @@ LaTeX*
 
 cmake-build-*
 build
+debug_build
 asan_build
 build_asan
 .cache

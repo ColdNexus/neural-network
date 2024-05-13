@@ -38,6 +38,8 @@ target_include_directories(nnet PUBLIC eigen)
 target_include_directories(nnet PUBLIC EigenRand)
 target_include_directories(nnet PUBLIC googletest)
 
+set(CMAKE_CXX_FLAGS "-O2")
+
 add_executable(run
   main.cpp
   tests/except.cpp
