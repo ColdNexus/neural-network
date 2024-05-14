@@ -20,6 +20,7 @@ add_library(nnet
   src/loss-func.cpp
   src/activation-func.cpp
   src/random.cpp
+  src/optimizer.cpp
 )
 
 set_compile_options(nnet)

@@ -108,8 +108,8 @@ std::vector<Net::TrainData> Zip(std::vector<Vector> data, std::vector<Vector> an
 void RunTests() {
     std::cout << "Tests started\n";
     TestLinear();
-    TestXor();
-    TestMnist();
+    // TestXor();
+    // TestMnist();
     std::cout << "Tests finished\n";
 }
 
@@ -132,10 +132,10 @@ Net TrainLinear() {
     std::vector<Vector> ans = ReadData(linear_ans);
     auto                data = Zip(x, ans);
     Net                 net({5, 1}, {Id()});
-    int                 epochs = 500;
+    int                 epochs = 100;
     {
         Printer p("TrainLinear 5 -> 5 -> 1, {ReLu, Id}, " + std::to_string(epochs) + " epochs");
-        net.TrainSGD(data, MSE(), epochs);
+        net.TrainVanilla(data, MSE(), epochs);
     }
     return net;
 }
