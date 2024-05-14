@@ -48,18 +48,6 @@ add_executable(run
 )
 target_link_libraries(run nnet)
 
-add_executable(testing
-  tests/test_test.cpp
-)
-
-target_link_libraries(testing nnet)
-
-add_executable(mnist
-  tests/test_mnist.cpp
-)
-
-target_link_libraries(mnist nnet)
-
 # Build tests if needed.
 if (${NNET_ENABLE_TESTS})
   add_subdirectory(tests)
